@@ -5,19 +5,19 @@ class Gleaner(object):
     """Extracts metadata from filepaths of data files using regex patterns.
 
     A Gleaner has a set of regular expressions called categories, each with a
-    name. When the glean() method of an instance is run, for each category,
-    re.search is used to find metadata in a file name. Then a dict with a key
-    for each category is returned where the values are the extracted metadata.
-    For example, if you have a file '/path/to/file/temp=295K', you could make a
-    Gleaner with `ng = Gleaner(temp='([0-9]+)K')`. Then re.search would
-    find the value '295' and `ng.glean('/path/to/file/temp=295K')` would return
-    `{'temp': '295'}`.  IMPORTANT: The pattern must use parenthesis around the
-    portion of the match that is to be extracted.  This is because the value is
-    extracted using `match.groups()[0]` where `match = re.search(pattern,
-    filepath)`.
+    name. When the``glean()``  method of an instance is run, for each category,
+    ``re.search`` is used to find metadata in a file name. Then a dict with a
+    key for each category is returned where the values are the extracted
+    metadata.  For example, if you have a file ``'/path/to/file/temp=295K'``, you
+    could make a ``Gleaner`` with ``ng = Gleaner(temp='([0-9]+)K')``. Then ``re.search``
+    would find the value ``'295'`` and `ng.glean('/path/to/file/temp=295K')` would
+    return ``{'temp': '295'}``.  IMPORTANT: The pattern must use parenthesis
+    around the portion of the match that is to be extracted.  This is because
+    the value is extracted using ``match.groups()[0]`` where ``match =
+    re.search(pattern, filepath)``.
 
     Attributes:
-        categories: A dict of the form name -> regex where the regex define
+        categories: A dict of the form name -> regex where the regex defines
             what glean() will search for.
         translations: Rules for translating extracted metadata into some other
             form. Commonly, metadata will use an abbreviation, but in a plot
