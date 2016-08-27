@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 setup(name='reglean',
       version='0.0.1',
       description=u"Glean metadata from a filename",
-      classifiers=[],
+      classifiers=['Topic :: Text Processing'],
       keywords='re',
       author=u"Julian Irwin",
       author_email='julian.irwin@gmail.com',
