@@ -69,8 +69,49 @@ first set of parenthesis is grabbed with ``match.groups()[0]``.
 Other Features
 =================================
 
-  - Translation
-  - Casting
+Translation
+---------------------------------
+
+It is common that the filename will have some abbreviation that you may
+want to replace with a longer value upon gleaning. For example you may
+want to change ``polarization=dn`` (where ``dn`` is the value) to ``down``. This
+can be accomplished by adding a translation to the gleaner before ``glean()``
+is called::
+
+
+      g = Gleaner(cat1='...', cat2='...', cat3='...', ...)
+      g.add_translation(category='cat1', value='foo', translation='bar'
+
+
+Or with regular expression relacement analogour to the ``re.sub()`` method::
+
+      g.add_translation(category='cat1', pattern='(\d+)deg', 
+                        translation='\1\degreee')
+
+
+
+Casting
+---------------------------------
+
+By default values are always strings because the filenames they are gleaned 
+from are strings. If you want the values to show up as floats (or any other
+type) instead you can use the ``cast_to`` parameter of ``add_category()``::
+
+
+      g = Gleaner(cat1='...', cat2='...', cat3='...', ...)
+      g.add_category('cat4', pattern='...', cast_to=float)
+
+Then whatever value is matched by pattern will be passed to ``float`` before it
+is returned by ``glean()``.
+
+
+Filler Objects
+---------------------------------
+
+By default if a pattern for a certain category doesn't find a match in the 
+string passed to ``glean()`` then ``'category': None`` is added to the ``dict``
+return by ``glean()``. If you would rather some other value be the default, use
+the ``fill_obj`` parameter of ``glean()``.
 
 
 
