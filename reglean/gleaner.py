@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import re
 
+
 class Gleaner(object):
     """Extracts metadata from filepaths of data files using regex patterns.
 
@@ -8,22 +9,22 @@ class Gleaner(object):
     name. When the``glean()``  method of an instance is run, for each category,
     ``re.search`` is used to find metadata in a file name. Then a dict with a
     key for each category is returned where the values are the extracted
-    metadata.  For example, if you have a file ``'/path/to/file/temp=295K'``, you
-    could make a ``Gleaner`` with ``ng = Gleaner(temp='([0-9]+)K')``. Then ``re.search``
-    would find the value ``'295'`` and `ng.glean('/path/to/file/temp=295K')` would
-    return ``{'temp': '295'}``.  IMPORTANT: The pattern must use parenthesis
-    around the portion of the match that is to be extracted.  This is because
-    the value is extracted using ``match.groups()[0]`` where ``match =
-    re.search(pattern, filepath)``.
+    metadata.  For example, if you have a file ``'/path/to/file/temp=295K'``,
+    you could make a ``Gleaner`` with ``ng = Gleaner(temp='([0-9]+)K')``. Then
+    ``re.search`` would find the value ``'295'`` and
+    `ng.glean('/path/to/file/temp=295K')` would return ``{'temp': '295'}``.
+    IMPORTANT: The pattern must use parenthesis around the portion of the match
+    that is to be extracted.  This is because the value is extracted using
+    ``match.groups()[0]`` where ``match = re.search(pattern, filepath)``.
 
     Attributes:
         categories: A dict of the form name -> regex where the regex defines
             what glean() will search for.
         translations: Rules for translating extracted metadata into some other
             form. Commonly, metadata will use an abbreviation, but in a plot
-            you will want the full word. If you metadata abbreviates 'down' 
+            you will want the full word. If you metadata abbreviates 'down'
             as 'dn', then translate('category_name', 'dn', 'down') would
-            automatically make glean() return 'down' instead of 'dn' in 
+            automatically make glean() return 'down' instead of 'dn' in
             the 'category_name' value of the dict it returns.
     """
 
@@ -36,7 +37,7 @@ class Gleaner(object):
 
     def add_category(self, category, pattern):
         """Add a category that the gleaner will search for in the strings that
-        are to be gleaned.  
+        are to be gleaned.
 
         Usually this method is not needed as all categories can be added when
         the Gleaner is constructed.
@@ -71,11 +72,11 @@ class Gleaner(object):
 
         Args:
             name: the filename to be gleaned
-            fill_obj: if the pattern from a certain category is not found in 
+            fill_obj: if the pattern from a certain category is not found in
                 the filename, by default `None` will go in the returned dict.
                 If a different value is passed to fill_obj, that value will
                 go in the dict instead.
-        
+
         Returns:
             dict: keys are the names of each category, values are the extracted
                 values or in the case of no match, `fill_obj`.
@@ -86,7 +87,7 @@ class Gleaner(object):
             if match:
                 gleaned = self._maybe_delistify(match.groups())
                 result[category] = self._translated(category, gleaned)
-                if result[category] == None:
+                if result[category] is None:
                     result[category] = fill_obj
                     continue
             else:
@@ -104,7 +105,7 @@ class Gleaner(object):
         """
         result = self.glean(name)
         for k, v in list(result.items()):
-            if v != None:
+            if v is not None:
                 return True
         return False
 
@@ -118,7 +119,7 @@ class Gleaner(object):
         try:
             # The value corresponding to the gleaned key is the translation
             # that was added using translate(). If the translation isn't found
-            # then we don't want to change anything, so gleaned is also the 
+            # then we don't want to change anything, so gleaned is also the
             # default.
             translated = self.translations[category].get(gleaned, gleaned)
         except:
@@ -132,7 +133,7 @@ class Gleaner(object):
 
     def _maybe_delistify(self, x):
         """For singleton lists, returns the item For empty lists returns None
-        Otherwise returns list's first item 
+        Otherwise returns list's first item
         """
         if len(x) == 0:
             return None
