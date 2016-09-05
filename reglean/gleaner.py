@@ -32,10 +32,11 @@ class Gleaner(object):
         self.categories = {}
         self.translations = {}
         self.regex_subs = {}
+        self.cast_funcs = {}
         for k, v in kwargs.items():
             self.add_category(k, v)
 
-    def add_category(self, category, pattern):
+    def add_category(self, category, pattern, cast_to=lambda x: x):
         """Add a category that the gleaner will search for in the strings that
         are to be gleaned.
 
@@ -45,11 +46,17 @@ class Gleaner(object):
         Args:
             category: name of the category
             pattern: the pattern that will be searched for in the filename
+            cast_to: a callable that takes the value matched by `pattern` and
+                     turns it into some other value. For example, if you are
+                     matching some text like `'1.0'` and `cast_to=float` then
+                     the dict returned by `glean` will have 1.0 as a float
+                     not as a string.
         """
         self.categories[category] = pattern
         if category not in list(self.translations.keys()):
             self.translations[category] = {}
             self.regex_subs[category] = {}
+            self.cast_funcs[category] = cast_to
 
     def remove_category(self, category):
         """Remove a category by name"""
@@ -109,9 +116,11 @@ class Gleaner(object):
         result = {}
         for category, pat in list(self.categories.items()):
             match = re.search(pat, name)
+            cast_func = self.cast_funcs[category]
             if match:
                 gleaned = self._maybe_delistify(match.groups())
-                result[category] = self._translated(category, gleaned)
+                result[category] = cast_func(
+                                      self._translated(category, gleaned))
                 if result[category] is None:
                     result[category] = fill_obj
                     continue

@@ -76,3 +76,23 @@ class TestGlean:
                           repl=r'\1..\2', regex=True)
         d = self.ng.glean(self.fname1)
         assert_equal(d['current'], '0..3')
+
+
+class TestCastFunc:
+    @classmethod
+    def setup(cls):
+        cls.fname1 = (r"F:\Rzchlab\Google Drive\BiFe\B737_1\amr_vs_angle"
+                      r"\141119\300uA_20G_-170to170deg_poldown\data_table.txt")
+        cls.fname2 = (r"F:\Rzchlab\Google Drive\BiFe\B737_1\amr_vs_angle"
+                      r"\141119\20G_-170to170deg_poldown\data_table.txt")
+        cls.ng = Gleaner(current=r'(\d+)uA',
+                         bfield=r'(\d+)G',
+                         start_angle=r'(-?\d+)to',
+                         end_angle=r'(-?\d+)deg',
+                         pol='pol(up|down)')
+        cls.ng = Gleaner()
+        cls.ng.add_category('current', r'(\d+)uA', cast_to=float)
+
+    def test_cast_to_float(self):
+        gleaned = self.ng.glean(self.fname1)
+        assert_equal(gleaned['current'], float('300'))
