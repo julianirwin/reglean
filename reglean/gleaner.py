@@ -55,17 +55,42 @@ class Gleaner(object):
         """Remove a category by name"""
         self.categories.pop(category, None)
 
-    def translate(self, category=None, value=None, translation=None):
-        """If `all` is set to true then the translation will be added
-        for all existing categories (but not categories added later!).
-        """
-        self.translations[category][value] = translation
+    def translate(self, category=None, value=None, translation=None,
+                  regex=False, pattern=None, repl=None, count=0, flags=0):
+        """Translate (map) a value that appears in the gleaned string into some
+        other value.
 
-    def regex_sub(self, category, pattern, repl, count=0, flags=0):
-        """Regular expression substitutions to be run on the gleaned
-        metadata. This just wraps re.sub().
+        Two translation options are possible. First is a direct mapping where
+        each occurence of `value` is replaced with `translation`. For example
+        if you might want to replace each occurence of `dn` with `down` in
+        your `polarization` category. The second option uses regular
+        expressions just like the `re.sub()` method.
+
+        Args:
+            category: name of the category translation applies to.
+            value: value to be translated
+            translation: replacement for `value`
+            regex: If `True` regular expression mode is used for translation.
+                   A `pattern` and `repl` must be passed if `regex` is `True`
+            pattern: An re pattern that will be used to search through gleaned
+                     values. If a match is found, the matched portion will be
+                     replaced according to `repl`. See `re.sub()`.
+            repl: What to replace gleaned data that matches `pattern` with.
+                  Note that you can use fancy regex like back references. See
+                  `re.sub()` for details.
+            flags: See `re`.
+            count: See `re`.
         """
-        self.regex_subs[category][pattern] = (repl, count, flags)
+        if regex:
+            if pattern is None or repl is None:
+                msg = 'must pass both a pattern and repl when regex=True.'
+                raise ValueError(msg)
+            self.regex_subs[category][pattern] = (repl, count, flags)
+        else:
+            if value is None or translation is None:
+                msg = 'must pass both a value and translation'
+                raise ValueError(msg)
+            self.translations[category][value] = translation
 
     def glean(self, name, fill_obj=None):
         """Extract metadata fromt the filenames.

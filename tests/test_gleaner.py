@@ -59,18 +59,20 @@ class TestGlean:
         assert_equal(d['current'], '300')
 
     def test_translate_with_pattern(self):
-        self.ng.translate('current', pattern='.*', repl='butts', regex=True)
+        self.ng.translate(category='current', pattern='.*',
+                          repl='butts', regex=True)
         d = self.ng.glean(self.fname1)
         assert_equal(d['current'], 'butts')
 
     def test_translate_with_backref_pattern(self):
-        self.ng.translate('pol', pattern=r'.*(wn)', repl=r'p\1d', regex=True)
+        self.ng.translate(category='pol', pattern=r'.*(wn)', repl=r'p\1d',
+                          regex=True)
         d = self.ng.glean(self.fname1)
         assert_equal(d['pol'], 'pwnd')
 
     def test_regex_translate_after_translate(self):
-        self.ng.translate(category='current', value='300', translation='0.3',
-                          regex=True)
-        self.ng.translate('current', r'(0)\.(3)', r'\1..\2')
+        self.ng.translate(category='current', value='300', translation='0.3')
+        self.ng.translate(category='current', pattern=r'(0)\.(3)', 
+                          repl=r'\1..\2', regex=True)
         d = self.ng.glean(self.fname1)
         assert_equal(d['current'], '0..3')
